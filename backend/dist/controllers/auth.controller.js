@@ -17,6 +17,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const utils_1 = require("@lib/utils");
 const user_model_1 = __importDefault(require("@models/user.model"));
 const zod_1 = require("zod");
+const errorUtils_1 = require("@lib/errorUtils");
 const signupSchema = zod_1.z.object({
     firstName: zod_1.z
         .string()
@@ -63,13 +64,7 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) {
-        if (error instanceof zod_1.z.ZodError) {
-            return res.status(400).json({
-                message: error.errors.map((e) => e.message).join(", "),
-            });
-        }
-        console.error("Ошибка в signup controller:", error);
-        res.status(500).json({ message: "Ошибка сервера." });
+        (0, errorUtils_1.handleError)(error, res, "Ошибка в signup controller");
     }
 });
 exports.signup = signup;

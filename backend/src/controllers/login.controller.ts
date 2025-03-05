@@ -3,6 +3,7 @@ import { z } from "zod";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { generateTokenJWT } from "@lib/utils";
+import { handleError } from "@lib/errorUtils";
 
 const loginSchema = z.object({
 	email: z.string().email("Некорректный email"),
@@ -49,14 +50,7 @@ export const login = async (req: Request, res: Response) => {
 			email: user.email,
 			profilePicture: user.profilePicture,
 		});
-		
 	} catch (error) {
-		if (error instanceof z.ZodError) {
-			return res.status(400).json({
-				message: error.errors.map((e) => e.message).join(", "),
-			});
-		}
-		console.error("Ошибка в login controller:", error);
-		res.status(500).json({ message: "Ошибка сервера." });
+		handleError(error, res, "Ошибка в login controller");
 	}
 };

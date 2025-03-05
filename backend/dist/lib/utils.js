@@ -6,14 +6,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateTokenJWT = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const generateTokenJWT = ({ userId, res }) => {
-    const token = jsonwebtoken_1.default.sign({ userId }, process.env.JWT_SECRET, {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+        throw new Error("JWT_SECRET is not defined in environment variables.");
+    }
+    const token = jsonwebtoken_1.default.sign({ userId }, secret, {
         expiresIn: "7d",
     });
     res.cookie("jwt", token, {
-        maxAge: 7 * 24 * 60 * 60 * 1000, // ms
-        httpOnly: true, // защищает от XSS
-        sameSite: "strict", // защищает от CSRF
-        secure: process.env.NODE_ENV !== "development",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+        httpOnly: true, // Protects the cookie from being accessed via JavaScript (XSS protection)
+        sameSite: "strict", // CSRF protection
+        secure: process.env.NODE_ENV !== "development", // Set cookie to 'secure' in production
     });
     return token;
 };

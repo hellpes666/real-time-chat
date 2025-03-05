@@ -17,6 +17,7 @@ const user_model_1 = __importDefault(require("@models/user.model"));
 const zod_1 = require("zod");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const utils_1 = require("@lib/utils");
+const errorUtils_1 = require("@lib/errorUtils");
 const loginSchema = zod_1.z.object({
     email: zod_1.z.string().email("Некорректный email"),
     password: zod_1.z
@@ -51,13 +52,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) {
-        if (error instanceof zod_1.z.ZodError) {
-            return res.status(400).json({
-                message: error.errors.map((e) => e.message).join(", "),
-            });
-        }
-        console.error("Ошибка в login controller:", error);
-        res.status(500).json({ message: "Ошибка сервера." });
+        (0, errorUtils_1.handleError)(error, res, "Ошибка в login controller");
     }
 });
 exports.login = login;

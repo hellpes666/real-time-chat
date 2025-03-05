@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { generateTokenJWT } from "@lib/utils";
 import User from "@models/user.model";
 import { z } from "zod";
+import { handleError } from "@lib/errorUtils";
 
 const signupSchema = z.object({
 	firstName: z
@@ -58,12 +59,6 @@ export const signup = async (req: Request, res: Response) => {
 			profilePicture: newUser.profilePicture,
 		});
 	} catch (error) {
-		if (error instanceof z.ZodError) {
-			return res.status(400).json({
-				message: error.errors.map((e) => e.message).join(", "),
-			});
-		}
-		console.error("Ошибка в signup controller:", error);
-		res.status(500).json({ message: "Ошибка сервера." });
+		handleError(error, res, "Ошибка в signup controller");
 	}
 };
