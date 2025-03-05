@@ -3,14 +3,6 @@ import User from "@models/user.model";
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-declare global {
-	namespace Express {
-		interface Request {
-			user?: InstanceType<typeof User>;
-		}
-	}
-}
-
 export const protectRoute = async (
 	req: Request,
 	res: Response,
