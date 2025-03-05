@@ -1,7 +1,8 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import authRouter from "@routes/auth.route";
+import userActionsRouter from "@routes/auth.route";
 import { connectDB } from "@lib/db";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -11,7 +12,10 @@ const PORT = process.env.PORT || 5001;
 // allow extract to json data from body request - middleware
 app.use(express.json());
 
-app.use("/api/auth", authRouter);
+app.use("/api/auth", userActionsRouter);
+
+// allow parse cookies
+app.use(cookieParser());
 
 app.get("/", (req: Request, res: Response) => {
 	res.send("sad + TypeScript Server");

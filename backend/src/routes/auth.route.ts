@@ -1,16 +1,22 @@
 import { signup } from "@controllers/auth.controller";
 import { login } from "@controllers/login.controller";
 import { logout } from "@controllers/logout.controller";
-import express, { Router, Request, Response } from "express";
+import { updateProfile } from "@controllers/updateProfile.controller";
+import { protectRoute } from "@middleware/protectRoute.middleware";
+import express, { Router } from "express";
 
-const authRouter: Router = express.Router();
+const userActionsRouter: Router = express.Router();
 
 //@ts-ignore
-authRouter.post("/signup", signup);
+userActionsRouter.post("/signup", signup);
 
 //@ts-ignore
-authRouter.post("/login", login);
+userActionsRouter.post("/login", login);
 
-authRouter.post("/logout", logout);
+userActionsRouter.post("/logout", logout);
 
-export default authRouter;
+//@ts-ignore
+userActionsRouter.put("/profile", protectRoute, updateProfile);
+
+
+export default userActionsRouter;

@@ -6,11 +6,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const auth_controller_1 = require("@controllers/auth.controller");
 const login_controller_1 = require("@controllers/login.controller");
 const logout_controller_1 = require("@controllers/logout.controller");
+const updateProfile_controller_1 = require("@controllers/updateProfile.controller");
+const protectRoute_middleware_1 = require("@middleware/protectRoute.middleware");
 const express_1 = __importDefault(require("express"));
-const authRouter = express_1.default.Router();
+const userActionsRouter = express_1.default.Router();
 //@ts-ignore
-authRouter.post("/signup", auth_controller_1.signup);
+userActionsRouter.post("/signup", auth_controller_1.signup);
 //@ts-ignore
-authRouter.post("/login", login_controller_1.login);
-authRouter.post("/logout", logout_controller_1.logout);
-exports.default = authRouter;
+userActionsRouter.post("/login", login_controller_1.login);
+userActionsRouter.post("/logout", logout_controller_1.logout);
+//@ts-ignore
+userActionsRouter.put("/profile", protectRoute_middleware_1.protectRoute, updateProfile_controller_1.updateProfile);
+exports.default = userActionsRouter;
