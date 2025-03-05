@@ -1,5 +1,6 @@
 import { signup } from "@controllers/auth.controller";
 import { login } from "@controllers/login.controller";
+import { logout } from "@controllers/logout.controller";
 import express, { Router, Request, Response } from "express";
 
 const authRouter: Router = express.Router();
@@ -10,6 +11,6 @@ authRouter.post("/signup", signup);
 //@ts-ignore
 authRouter.post("/login", login);
 
-// authRouter.post("/logout", logout);
+authRouter.post("/logout", logout);
 
 export default authRouter;

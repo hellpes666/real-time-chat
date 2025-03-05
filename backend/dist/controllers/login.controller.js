@@ -20,26 +20,17 @@ const utils_1 = require("@lib/utils");
 const errorUtils_1 = require("@lib/errorUtils");
 const loginSchema = zod_1.z.object({
     email: zod_1.z.string().email("Некорректный email"),
-    password: zod_1.z
-        .string()
-        .min(6, "Пароль должен содержать минимум 6 символов")
-        .max(128, "Пароль не может содержать более 128 символов")
-        .regex(/[a-zA-Z]/, "Пароль должен содержать хотя бы одну букву")
-        .regex(/\d/, "Пароль должен содержать хотя бы одну цифру")
-        .regex(/[!@#$%^&*(),.?":{}|<>]/, "Пароль должен содержать хотя бы один специальный символ"),
+    password: zod_1.z.string().min(6).max(128),
 });
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const parsedData = loginSchema.parse(req.body);
         const user = yield user_model_1.default.findOne({ email: parsedData.email });
-        if (!user) {
+        if (!user ||
+            !(yield bcryptjs_1.default.compare(parsedData.password, user.password))) {
             return res
-                .status(400)
-                .json({ message: "Пожалуйста, пройдите регистрацию." });
-        }
-        const isPasswordCorrect = yield bcryptjs_1.default.compare(parsedData.password, user.password);
-        if (!isPasswordCorrect) {
-            return res.status(401).json({ message: "Неверный пароль." });
+                .status(401)
+                .json({ message: "Неверные учетные данные." });
         }
         (0, utils_1.generateTokenJWT)({ userId: user._id, res });
         res.status(200).json({
