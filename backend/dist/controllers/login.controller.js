@@ -12,20 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signup = void 0;
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const utils_1 = require("@lib/utils");
+exports.login = void 0;
 const user_model_1 = __importDefault(require("@models/user.model"));
 const zod_1 = require("zod");
-const signupSchema = zod_1.z.object({
-    firstName: zod_1.z
-        .string()
-        .min(1, "Имя обязательно")
-        .max(128, "Имя не может быть длиньше 36 символов"),
-    lastName: zod_1.z
-        .string()
-        .min(1, "Фамилия обязательна")
-        .max(128, "Фамилия не может быть длиньше 36 символов"),
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const utils_1 = require("@lib/utils");
+const loginSchema = zod_1.z.object({
     email: zod_1.z.string().email("Некорректный email"),
     password: zod_1.z
         .string()
@@ -35,31 +27,27 @@ const signupSchema = zod_1.z.object({
         .regex(/\d/, "Пароль должен содержать хотя бы одну цифру")
         .regex(/[!@#$%^&*(),.?":{}|<>]/, "Пароль должен содержать хотя бы один специальный символ"),
 });
-const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const parsedData = signupSchema.parse(req.body);
-        const existingUser = yield user_model_1.default.exists({ email: parsedData.email });
-        if (existingUser) {
+        const parsedData = loginSchema.parse(req.body);
+        const user = yield user_model_1.default.findOne({ email: parsedData.email });
+        if (!user) {
             return res
                 .status(400)
-                .json({ message: "Такой пользователь уже существует." });
+                .json({ message: "Пожалуйста, пройдите регистрацию." });
         }
-        const salt = yield bcryptjs_1.default.genSalt(13);
-        const hashedPassword = yield bcryptjs_1.default.hash(parsedData.password, salt);
-        const newUser = yield user_model_1.default.create({
-            firstName: parsedData.firstName,
-            lastName: parsedData.lastName,
-            email: parsedData.email,
-            password: hashedPassword,
-        });
-        (0, utils_1.generateTokenJWT)({ userId: newUser._id, res });
-        res.status(201).json({
-            message: "Пользователь успешно создан!",
-            _id: newUser._id,
-            firstName: newUser.firstName,
-            lastName: newUser.lastName,
-            email: newUser.email,
-            profilePicture: newUser.profilePicture,
+        const isPasswordCorrect = yield bcryptjs_1.default.compare(parsedData.password, user.password);
+        if (!isPasswordCorrect) {
+            return res.status(401).json({ message: "Неверный пароль." });
+        }
+        (0, utils_1.generateTokenJWT)({ userId: user._id, res });
+        res.status(200).json({
+            message: "Авторизация успешна!",
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            profilePicture: user.profilePicture,
         });
     }
     catch (error) {
@@ -68,8 +56,8 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 message: error.errors.map((e) => e.message).join(", "),
             });
         }
-        console.error("Ошибка в signup controller:", error);
+        console.error("Ошибка в login controller:", error);
         res.status(500).json({ message: "Ошибка сервера." });
     }
 });
-exports.signup = signup;
+exports.login = login;
