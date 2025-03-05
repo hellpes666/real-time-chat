@@ -13,50 +13,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.signup = void 0;
-const user_model_1 = __importDefault(require("@models/user.model"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const utils_1 = require("@lib/utils");
+const user_model_1 = __importDefault(require("@models/user.model"));
+const zod_1 = require("zod");
+const signupSchema = zod_1.z.object({
+    firstName: zod_1.z.string().min(1, "Имя обязательно"),
+    lastName: zod_1.z.string().min(1, "Фамилия обязательна"),
+    email: zod_1.z.string().email("Некорректный email"),
+    password: zod_1.z
+        .string()
+        .min(6, "Пароль должен содержать минимум 6 символов")
+        .regex(/[a-zA-Z]/, "Пароль должен содержать хотя бы одну букву")
+        .regex(/\d/, "Пароль должен содержать хотя бы одну цифру")
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, "Пароль должен содержать хотя бы один специальный символ"),
+});
 const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { firstName, lastName, email, password } = req.body;
     try {
-        if (!firstName || !lastName || !email || !password) {
-            return res.status(400).json({
-                message: "Пожалуйста, заполните все поля.",
-            });
-        }
-        if (password.length < 6) {
-            return res.status(400).json({
-                message: "Пароль должен содержать минимум 6 символов.",
-            });
-        }
-        const hasNumber = /\d/; // Проверяет, есть ли хотя бы одна цифра
-        const hasLetter = /[a-zA-Z]/; // Проверяет, есть ли хотя бы одна буква
-        if (!hasNumber.test(password) || !hasLetter.test(password)) {
-            return res.status(400).json({
-                message: "Пароль должен содержать как минимум одну цифру и одну букву.",
-            });
-        }
-        const mustHaveSpecialSymbolRegex = /[!@#$%^&*(),.?":{}|<>]/;
-        if (!mustHaveSpecialSymbolRegex.test(password)) {
-            return res.status(400).json({
-                message: "Пароль должен содержать хотя бы один специальный символ.",
-            });
-        }
-        const user = yield user_model_1.default.findOne({ email });
-        if (user) {
-            return res.status(400).json({
-                message: "Такой пользователь уже существует.",
-            });
+        const parsedData = signupSchema.parse(req.body);
+        const existingUser = yield user_model_1.default.exists({ email: parsedData.email });
+        if (existingUser) {
+            return res
+                .status(400)
+                .json({ message: "Такой пользователь уже существует." });
         }
         const salt = yield bcryptjs_1.default.genSalt(13);
-        const hashedPassword = yield bcryptjs_1.default.hash(password, salt);
-        const newUser = new user_model_1.default({
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
+        const hashedPassword = yield bcryptjs_1.default.hash(parsedData.password, salt);
+        const newUser = yield user_model_1.default.create({
+            firstName: parsedData.firstName,
+            lastName: parsedData.lastName,
+            email: parsedData.email,
             password: hashedPassword,
         });
-        yield newUser.save();
         (0, utils_1.generateTokenJWT)({ userId: newUser._id, res });
         res.status(201).json({
             message: "Пользователь успешно создан!",
@@ -68,8 +56,14 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) {
-        const errorMessage = error.message || "Неизвестная ошибка";
-        console.log("Ошибка в signup controller", errorMessage);
+        if (error instanceof zod_1.z.ZodError) {
+            return res
+                .status(400)
+                .json({
+                message: error.errors.map((e) => e.message).join(", "),
+            });
+        }
+        console.error("Ошибка в signup controller:", error);
         res.status(500).json({ message: "Ошибка сервера." });
     }
 });

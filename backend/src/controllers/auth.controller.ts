@@ -1,70 +1,44 @@
-import User from "@models/user.model";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { generateTokenJWT } from "@lib/utils";
+import User from "@models/user.model";
+import { z } from "zod";
 
-export interface ISignupRequestBody {
-	firstName: string;
-	lastName: string;
-	email: string;
-	password: string;
-}
+const signupSchema = z.object({
+	firstName: z.string().min(1, "Имя обязательно"),
+	lastName: z.string().min(1, "Фамилия обязательна"),
+	email: z.string().email("Некорректный email"),
+	password: z
+		.string()
+		.min(6, "Пароль должен содержать минимум 6 символов")
+		.regex(/[a-zA-Z]/, "Пароль должен содержать хотя бы одну букву")
+		.regex(/\d/, "Пароль должен содержать хотя бы одну цифру")
+		.regex(
+			/[!@#$%^&*(),.?":{}|<>]/,
+			"Пароль должен содержать хотя бы один специальный символ"
+		),
+});
 
-export const signup = async (
-	req: Request<{}, {}, ISignupRequestBody>,
-	res: Response
-) => {
-	const { firstName, lastName, email, password } = req.body;
-
+export const signup = async (req: Request, res: Response) => {
 	try {
-		if (!firstName || !lastName || !email || !password) {
-			return res.status(400).json({
-				message: "Пожалуйста, заполните все поля.",
-			});
-		}
+		const parsedData = signupSchema.parse(req.body);
 
-		if (password.length < 6) {
-			return res.status(400).json({
-				message: "Пароль должен содержать минимум 6 символов.",
-			});
-		}
-
-		const hasNumber = /\d/; // Проверяет, есть ли хотя бы одна цифра
-		const hasLetter = /[a-zA-Z]/; // Проверяет, есть ли хотя бы одна буква
-
-		if (!hasNumber.test(password) || !hasLetter.test(password)) {
-			return res.status(400).json({
-				message:
-					"Пароль должен содержать как минимум одну цифру и одну букву.",
-			});
-		}
-
-		const mustHaveSpecialSymbolRegex = /[!@#$%^&*(),.?":{}|<>]/;
-		if (!mustHaveSpecialSymbolRegex.test(password)) {
-			return res.status(400).json({
-				message:
-					"Пароль должен содержать хотя бы один специальный символ.",
-			});
-		}
-
-		const user = await User.findOne({ email });
-		if (user) {
-			return res.status(400).json({
-				message: "Такой пользователь уже существует.",
-			});
+		const existingUser = await User.exists({ email: parsedData.email });
+		if (existingUser) {
+			return res
+				.status(400)
+				.json({ message: "Такой пользователь уже существует." });
 		}
 
 		const salt = await bcrypt.genSalt(13);
-		const hashedPassword = await bcrypt.hash(password, salt);
+		const hashedPassword = await bcrypt.hash(parsedData.password, salt);
 
-		const newUser = new User({
-			firstName: firstName,
-			lastName: lastName,
-			email: email,
+		const newUser = await User.create({
+			firstName: parsedData.firstName,
+			lastName: parsedData.lastName,
+			email: parsedData.email,
 			password: hashedPassword,
 		});
-
-		await newUser.save();
 
 		generateTokenJWT({ userId: newUser._id, res });
 
@@ -76,9 +50,15 @@ export const signup = async (
 			email: newUser.email,
 			profilePicture: newUser.profilePicture,
 		});
-	} catch (error: unknown) {
-		const errorMessage = (error as Error).message || "Неизвестная ошибка";
-		console.log("Ошибка в signup controller", errorMessage);
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			return res
+				.status(400)
+				.json({
+					message: error.errors.map((e) => e.message).join(", "),
+				});
+		}
+		console.error("Ошибка в signup controller:", error);
 		res.status(500).json({ message: "Ошибка сервера." });
 	}
 };
