@@ -10,6 +10,8 @@ const db_1 = require("@lib/db");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 5001;
+// allow extract to json data from body request - middleware
+app.use(express_1.default.json());
 app.use("/api/auth", auth_route_1.default);
 app.get("/", (req, res) => {
     res.send("sad + TypeScript Server");

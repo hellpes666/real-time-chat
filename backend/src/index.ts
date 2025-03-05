@@ -8,6 +8,9 @@ dotenv.config();
 const app: Express = express();
 const PORT = process.env.PORT || 5001;
 
+// allow extract to json data from body request - middleware
+app.use(express.json());
+
 app.use("/api/auth", authRouter);
 
 app.get("/", (req: Request, res: Response) => {
