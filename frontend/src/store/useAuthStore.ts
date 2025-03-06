@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import { IUser } from "../model/user";
+import { handleError } from "../lib/handleError";
 
 interface AuthState {
 	authUser: IUser | null;
@@ -28,11 +29,18 @@ export const useAuthStore = create<AuthState>((set) => ({
 		} catch (error) {
 			set({ authUser: null });
 
-			const curError = error as Error;
-
-			console.error("Error in useAuthStore:", curError);
+			handleError(error, "store/useAuthStore - checkAuth");
 		} finally {
 			set({ isCheckingAuth: false });
+		}
+	},
+
+	signup: async (data: IUser) => {
+		try {
+			const res = await axiosInstance.post("auth/signup", data);
+			set({ authUser: res.data });
+		} catch (error) {
+			handleError(error, "store/useAuthStore - signup");
 		}
 	},
 }));
