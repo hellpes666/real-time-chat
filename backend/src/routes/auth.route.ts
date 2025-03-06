@@ -1,4 +1,5 @@
 import { signup } from "@controllers/auth.controller";
+import { checkAuth } from "@controllers/checkAuth.controller";
 import { login } from "@controllers/login.controller";
 import { logout } from "@controllers/logout.controller";
 import { updateProfile } from "@controllers/updateProfile.controller";
@@ -18,5 +19,7 @@ userActionsRouter.post("/logout", logout);
 //@ts-ignore
 userActionsRouter.put("/profile", protectRoute, updateProfile);
 
+//@ts-ignore
+userActionsRouter.get("/user", protectRoute, checkAuth);
 
 export default userActionsRouter;

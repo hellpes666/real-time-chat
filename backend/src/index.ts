@@ -12,10 +12,11 @@ const PORT = process.env.PORT || 5001;
 // allow extract to json data from body request - middleware
 app.use(express.json());
 
-app.use("/api/auth", userActionsRouter);
-
 // allow parse cookies
 app.use(cookieParser());
+
+app.use("/api/auth", userActionsRouter);
+
 
 app.get("/", (req: Request, res: Response) => {
 	res.send("sad + TypeScript Server");

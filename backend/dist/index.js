@@ -13,9 +13,9 @@ const app = (0, express_1.default)();
 const PORT = process.env.PORT || 5001;
 // allow extract to json data from body request - middleware
 app.use(express_1.default.json());
-app.use("/api/auth", auth_route_1.default);
 // allow parse cookies
 app.use((0, cookie_parser_1.default)());
+app.use("/api/auth", auth_route_1.default);
 app.get("/", (req, res) => {
     res.send("sad + TypeScript Server");
 });

@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const auth_controller_1 = require("@controllers/auth.controller");
+const checkAuth_controller_1 = require("@controllers/checkAuth.controller");
 const login_controller_1 = require("@controllers/login.controller");
 const logout_controller_1 = require("@controllers/logout.controller");
 const updateProfile_controller_1 = require("@controllers/updateProfile.controller");
@@ -17,4 +18,6 @@ userActionsRouter.post("/login", login_controller_1.login);
 userActionsRouter.post("/logout", logout_controller_1.logout);
 //@ts-ignore
 userActionsRouter.put("/profile", protectRoute_middleware_1.protectRoute, updateProfile_controller_1.updateProfile);
+//@ts-ignore
+userActionsRouter.get("/user", protectRoute_middleware_1.protectRoute, checkAuth_controller_1.checkAuth);
 exports.default = userActionsRouter;
