@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import userActionsRouter from "@routes/auth.route";
 import { connectDB } from "@lib/db";
 import cookieParser from "cookie-parser";
+import messageRouter from "@routes/message.route";
 
 dotenv.config();
 
@@ -17,10 +18,8 @@ app.use(cookieParser());
 
 app.use("/api/auth", userActionsRouter);
 
+app.use("/api/message", messageRouter);
 
-app.get("/", (req: Request, res: Response) => {
-	res.send("sad + TypeScript Server");
-});
 
 app.listen(PORT, () => {
 	console.log(`[server]: Server is running at http://localhost:${PORT}`);

@@ -1,8 +1,8 @@
-import { signup } from "@controllers/auth.controller";
-import { checkAuth } from "@controllers/checkAuth.controller";
-import { login } from "@controllers/login.controller";
-import { logout } from "@controllers/logout.controller";
-import { updateProfile } from "@controllers/updateProfile.controller";
+import { signup } from "@controllers/auth/auth.controller";
+import { checkAuth } from "@controllers/auth/checkAuth.controller";
+import { login } from "@controllers/auth/login.controller";
+import { logout } from "@controllers/auth/logout.controller";
+import { updateProfile } from "@controllers/auth/updateProfile.controller";
 import { protectRoute } from "@middleware/protectRoute.middleware";
 import express, { Router } from "express";
 

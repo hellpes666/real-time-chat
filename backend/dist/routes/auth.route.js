@@ -3,11 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const auth_controller_1 = require("@controllers/auth.controller");
-const checkAuth_controller_1 = require("@controllers/checkAuth.controller");
-const login_controller_1 = require("@controllers/login.controller");
-const logout_controller_1 = require("@controllers/logout.controller");
-const updateProfile_controller_1 = require("@controllers/updateProfile.controller");
+const auth_controller_1 = require("@controllers/auth/auth.controller");
+const checkAuth_controller_1 = require("@controllers/auth/checkAuth.controller");
+const login_controller_1 = require("@controllers/auth/login.controller");
+const logout_controller_1 = require("@controllers/auth/logout.controller");
+const updateProfile_controller_1 = require("@controllers/auth/updateProfile.controller");
 const protectRoute_middleware_1 = require("@middleware/protectRoute.middleware");
 const express_1 = __importDefault(require("express"));
 const userActionsRouter = express_1.default.Router();
