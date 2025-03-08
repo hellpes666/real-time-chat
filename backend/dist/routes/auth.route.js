@@ -11,9 +11,7 @@ const updateProfile_controller_1 = require("@controllers/auth/updateProfile.cont
 const protectRoute_middleware_1 = require("@middleware/protectRoute.middleware");
 const express_1 = __importDefault(require("express"));
 const userActionsRouter = express_1.default.Router();
-//@ts-ignore
 userActionsRouter.post("/signup", auth_controller_1.signup);
-//@ts-ignore
 userActionsRouter.post("/login", login_controller_1.login);
 userActionsRouter.post("/logout", logout_controller_1.logout);
 //@ts-ignore

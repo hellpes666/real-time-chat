@@ -18,21 +18,32 @@ const user_model_1 = __importDefault(require("@models/user.model"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const protectRoute = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        // Извлекаем токен из cookies
         const token = req.cookies.jwt;
         if (!token) {
+            return res.status(401).json({
+                message: "Вы не авторизованы. No Token Provided.",
+            });
+        }
+        // Проверяем токен с использованием секретного ключа
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        if (!decoded || !decoded.userId) {
             return res
                 .status(401)
-                .json({ message: "Вы не авторизованы. No Token Provided." });
+                .json({ message: "Unauthorized - Invalid Token" });
         }
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        // Ищем пользователя по userId из токена
         const user = yield user_model_1.default.findById(decoded.userId).select("-password");
         if (!user) {
             return res.status(401).json({ message: "Пользователь не найден" });
         }
+        // Добавляем пользователя в запрос
         req.user = user;
+        // Переходим к следующему middleware
         next();
     }
     catch (error) {
+        // Обработка ошибки
         (0, errorUtils_1.handleError)(error, res, "Ошибка в protectRoute middleware");
     }
 });

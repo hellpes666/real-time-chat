@@ -4,12 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const getMessages_controller_1 = require("@controllers/message/getMessages.controller");
+const getUsersForSidebar_controller_1 = require("@controllers/message/getUsersForSidebar.controller");
 const sendMessage_controller_1 = require("@controllers/message/sendMessage.controller");
 const protectRoute_middleware_1 = require("@middleware/protectRoute.middleware");
 const express_1 = __importDefault(require("express"));
 const messageRouter = express_1.default.Router();
 //@ts-ignore
-messageRouter.get("/users", protectRoute_middleware_1.protectRoute, getUsersForSidebar);
+messageRouter.get("/users", protectRoute_middleware_1.protectRoute, getUsersForSidebar_controller_1.getUsersForSidebar);
 //@ts-ignore
 messageRouter.get("/:id", protectRoute_middleware_1.protectRoute, getMessages_controller_1.getMessages);
 //@ts-ignore

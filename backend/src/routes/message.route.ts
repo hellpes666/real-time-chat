@@ -1,4 +1,5 @@
 import { getMessages } from "@controllers/message/getMessages.controller";
+import { getUsersForSidebar } from "@controllers/message/getUsersForSidebar.controller";
 import { sendMessage } from "@controllers/message/sendMessage.controller";
 import { protectRoute } from "@middleware/protectRoute.middleware";
 import express, { Router } from "express";

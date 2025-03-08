@@ -20,20 +20,18 @@ export const login = async (req: Request, res: Response) => {
 			!user ||
 			!(await bcrypt.compare(parsedData.password, user.password))
 		) {
-			return res
-				.status(401)
-				.json({ message: "Неверные учетные данные." });
+			res.status(401).json({ message: "Неверные учетные данные." });
+		} else {
+			generateTokenJWT({ userId: user._id, res });
+			res.status(200).json({
+				message: "Авторизация успешна!",
+				_id: user._id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				email: user.email,
+				profilePicture: user.profilePicture,
+			});
 		}
-
-		generateTokenJWT({ userId: user._id, res });
-		res.status(200).json({
-			message: "Авторизация успешна!",
-			_id: user._id,
-			firstName: user.firstName,
-			lastName: user.lastName,
-			email: user.email,
-			profilePicture: user.profilePicture,
-		});
 	} catch (error) {
 		handleError(error, res, "Ошибка в login controller");
 	}

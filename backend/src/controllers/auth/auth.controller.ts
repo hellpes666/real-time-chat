@@ -33,9 +33,9 @@ export const signup = async (req: Request, res: Response) => {
 
 		const existingUser = await User.exists({ email: parsedData.email });
 		if (existingUser) {
-			return res
-				.status(400)
-				.json({ message: "Такой пользователь уже существует." });
+			res.status(400).json({
+				message: "Такой пользователь уже существует.",
+			});
 		}
 
 		const salt = await bcrypt.genSalt(13);

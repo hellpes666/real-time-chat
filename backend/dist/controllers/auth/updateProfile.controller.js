@@ -21,9 +21,9 @@ const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const { profilePicture } = req.body;
         const userId = req.user._id;
         if (!profilePicture) {
-            return res
-                .status(400)
-                .json({ message: "Изображение профиля не найдено." });
+            res.status(400).json({
+                message: "Изображение профиля не найдено.",
+            });
         }
         const uploadResponse = yield cloudinary_1.default.uploader.upload(profilePicture);
         const updatedUser = yield user_model_1.default.findByIdAndUpdate(userId, {

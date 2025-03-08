@@ -10,9 +10,9 @@ export const updateProfile = async (req: Request, res: Response) => {
 		const userId = req.user._id;
 
 		if (!profilePicture) {
-			return res
-				.status(400)
-				.json({ message: "Изображение профиля не найдено." });
+			res.status(400).json({
+				message: "Изображение профиля не найдено.",
+			});
 		}
 
 		const uploadResponse = await cloudinary.uploader.upload(profilePicture);

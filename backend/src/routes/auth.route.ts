@@ -8,10 +8,8 @@ import express, { Router } from "express";
 
 const userActionsRouter: Router = express.Router();
 
-//@ts-ignore
 userActionsRouter.post("/signup", signup);
 
-//@ts-ignore
 userActionsRouter.post("/login", login);
 
 userActionsRouter.post("/logout", logout);

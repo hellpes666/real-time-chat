@@ -41,9 +41,9 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const parsedData = signupSchema.parse(req.body);
         const existingUser = yield user_model_1.default.exists({ email: parsedData.email });
         if (existingUser) {
-            return res
-                .status(400)
-                .json({ message: "Такой пользователь уже существует." });
+            res.status(400).json({
+                message: "Такой пользователь уже существует.",
+            });
         }
         const salt = yield bcryptjs_1.default.genSalt(13);
         const hashedPassword = yield bcryptjs_1.default.hash(parsedData.password, salt);

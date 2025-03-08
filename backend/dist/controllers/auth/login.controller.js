@@ -28,19 +28,19 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield user_model_1.default.findOne({ email: parsedData.email });
         if (!user ||
             !(yield bcryptjs_1.default.compare(parsedData.password, user.password))) {
-            return res
-                .status(401)
-                .json({ message: "Неверные учетные данные." });
+            res.status(401).json({ message: "Неверные учетные данные." });
         }
-        (0, utils_1.generateTokenJWT)({ userId: user._id, res });
-        res.status(200).json({
-            message: "Авторизация успешна!",
-            _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            profilePicture: user.profilePicture,
-        });
+        else {
+            (0, utils_1.generateTokenJWT)({ userId: user._id, res });
+            res.status(200).json({
+                message: "Авторизация успешна!",
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                profilePicture: user.profilePicture,
+            });
+        }
     }
     catch (error) {
         (0, errorUtils_1.handleError)(error, res, "Ошибка в login controller");

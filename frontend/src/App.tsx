@@ -11,7 +11,7 @@ import { useAuthStore } from "./store/useAuthStore";
 import { JSX, useEffect } from "react";
 import { Loader } from "lucide-react";
 import { IUser } from "./model/user";
-
+import { Toaster } from "react-hot-toast";
 const App = () => {
 	const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
@@ -38,7 +38,7 @@ const App = () => {
 	};
 
 	return (
-		<div>
+		<div className="h-full w-full overflow-hidden">
 			<Navbar />
 
 			<Routes>
@@ -72,6 +72,8 @@ const App = () => {
 					)}
 				/>
 			</Routes>
+
+			<Toaster />
 		</div>
 	);
 };
