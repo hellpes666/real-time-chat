@@ -11,6 +11,8 @@ interface AuthState {
 	isSigningUp: boolean;
 	isLoggingIn: boolean;
 	isUpdatingProfile: boolean;
+	logout: () => void;
+	login: (data: Omit<IUser, "firstName" | "lastName">) => void;
 	checkAuth: () => void;
 	signup: (data: IUser) => void;
 }
@@ -46,6 +48,29 @@ export const useAuthStore = create<AuthState>((set) => ({
 			handleError(error, "store/useAuthStore - checkAuth");
 		} finally {
 			set({ isCheckingAuth: false });
+		}
+	},
+
+	logout: async () => {
+		try {
+			await axiosInstance.post("auth/logout");
+			set({ authUser: null });
+			toast.success("Вы успешно вышли");
+		} catch (error) {
+			handleError(error, "store/useAuthStore - logout");
+		}
+	},
+
+	login: async (data: Omit<IUser, "firstName" | "lastName">) => {
+		set({ isLoggingIn: true });
+		try {
+			const response = await axiosInstance.post("auth/login", data);
+			set({ authUser: response.data });
+			toast.success("Вы успешно зашли");
+		} catch (error) {
+			handleError(error, "store/useAuthStore - login");
+		} finally {
+			set({ isLoggingIn: false });
 		}
 	},
 }));

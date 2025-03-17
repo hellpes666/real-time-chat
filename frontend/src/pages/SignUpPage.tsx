@@ -8,7 +8,6 @@ import { useAuthStore } from "../store/useAuthStore";
 import { ISignUpForm } from "../model/form";
 
 const SignUpPage = () => {
-	const [showPassword, setShowPassword] = useState<boolean>(false);
 	const [formData, setFormData] = useState<ISignUpForm>({
 		firstName: "",
 		lastName: "",
@@ -23,58 +22,47 @@ const SignUpPage = () => {
 	const validateForm = () => {
 		const formErrors: { [key: string]: string } = {};
 
-		// Проверка на First Name
 		if (!formData.firstName.trim()) {
 			formErrors.firstName = "First name is required";
-			toast.error("First name is required"); // Выводим ошибку через toast
-		}
-
-		// Проверка на Last Name
-		else if (!formData.lastName.trim()) {
+			toast.error("First name is required");
+		} else if (!formData.lastName.trim()) {
 			formErrors.lastName = "Last name is required";
-			toast.error("Last name is required"); // Выводим ошибку через toast
-		}
-
-		// Проверка на Email
-		else if (!formData.email.trim()) {
+			toast.error("Last name is required");
+		} else if (!formData.email.trim()) {
 			formErrors.email = "Email is required";
-			toast.error("Email is required"); // Выводим ошибку через toast
+			toast.error("Email is required");
 		} else if (!/\S+@\S+\.\S+/.test(formData.email)) {
 			formErrors.email = "Invalid email format";
-			toast.error("Invalid email format"); // Выводим ошибку через toast
-		}
-
-		// Проверка на Password
-		else if (!formData.password) {
+			toast.error("Invalid email format");
+		} else if (!formData.password) {
 			formErrors.password = "Password is required";
-			toast.error("Password is required"); // Выводим ошибку через toast
+			toast.error("Password is required");
 		} else {
 			if (formData.password.length < 6) {
 				formErrors.password = "Password must be at least 6 characters";
-				toast.error("Password must be at least 6 characters"); // Выводим ошибку через toast
+				toast.error("Password must be at least 6 characters");
 			}
 			if (!/[a-zA-Z]/.test(formData.password)) {
 				formErrors.password =
 					"Password must contain at least one letter";
-				toast.error("Password must contain at least one letter"); // Выводим ошибку через toast
+				toast.error("Password must contain at least one letter");
 			}
 			if (!/\d/.test(formData.password)) {
 				formErrors.password =
 					"Password must contain at least one number";
-				toast.error("Password must contain at least one number"); // Выводим ошибку через toast
+				toast.error("Password must contain at least one number");
 			}
 			if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
 				formErrors.password =
 					"Password must contain at least one special character";
 				toast.error(
 					"Password must contain at least one special character"
-				); // Выводим ошибку через toast
+				);
 			}
 		}
 
 		setErrors(formErrors);
 
-		// Если нет ошибок, возвращаем true
 		return Object.keys(formErrors).length === 0;
 	};
 
@@ -93,7 +81,6 @@ const SignUpPage = () => {
 			{/* left side */}
 			<div className="flex flex-col justify-center items-center p-6 sm:p-12">
 				<div className="w-full max-w-md space-y-8">
-					{/* LOGO */}
 					<div className="text-center mb-8">
 						<div className="flex flex-col items-center gap-2 group">
 							<div
@@ -113,7 +100,6 @@ const SignUpPage = () => {
 
 					<form onSubmit={handleSubmit} className="space-y-6">
 						<fieldset className="fieldset w-full bg-base-200 border border-base-300 p-4 rounded-box">
-							{/* First Name */}
 							<label className="fieldset-label">First Name</label>
 							<input
 								type="text"
@@ -133,7 +119,6 @@ const SignUpPage = () => {
 								</p>
 							)}
 
-							{/* Last Name */}
 							<label className="fieldset-label">Last Name</label>
 							<input
 								type="text"
@@ -153,7 +138,6 @@ const SignUpPage = () => {
 								</p>
 							)}
 
-							{/* Email */}
 							<label className="fieldset-label">Email</label>
 							<input
 								type="email"

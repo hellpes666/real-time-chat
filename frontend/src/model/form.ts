@@ -1,4 +1,4 @@
-interface IAuthForm {
+export interface IAuthForm {
 	email: string;
 	password: string;
 }
