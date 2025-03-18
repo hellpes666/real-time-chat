@@ -45,7 +45,7 @@ const Navbar = () => {
 								</Link>
 
 								<button
-									className="flex gap-2 items-center"
+									className="cursor-pointer flex gap-2 items-center"
 									onClick={logout}
 								>
 									<LogOut className="size-5" />

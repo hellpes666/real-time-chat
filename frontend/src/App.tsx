@@ -12,8 +12,10 @@ import { JSX, useEffect } from "react";
 import { Loader } from "lucide-react";
 import { IUser } from "./model/user";
 import { Toaster } from "react-hot-toast";
+import { useThemeStore } from "./store/useThemeStore";
 const App = () => {
 	const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+	const { theme } = useThemeStore();
 
 	useEffect(() => {
 		checkAuth();
@@ -38,7 +40,7 @@ const App = () => {
 	};
 
 	return (
-		<div className="h-full w-full overflow-hidden">
+		<div className="h-full w-full overflow-hidden" data-theme={theme}>
 			<Navbar />
 
 			<Routes>
