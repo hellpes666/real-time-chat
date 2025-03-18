@@ -6,13 +6,10 @@ import express, { Router } from "express";
 
 const messageRouter: Router = express.Router();
 
-//@ts-ignore
 messageRouter.get("/users", protectRoute, getUsersForSidebar);
 
-//@ts-ignore
 messageRouter.get("/:id", protectRoute, getMessages);
 
-//@ts-ignore
 messageRouter.post("/send/:id", protectRoute, sendMessage);
 
 export default messageRouter;

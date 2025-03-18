@@ -11,6 +11,7 @@ interface AuthState {
 	isSigningUp: boolean;
 	isLoggingIn: boolean;
 	isUpdatingProfile: boolean;
+	onlineUsers: IAuthUser[];
 
 	logout: () => void;
 	login: (data: Omit<IUser, "firstName" | "lastName">) => void;
@@ -26,7 +27,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 	isSigningUp: false,
 	isLoggingIn: false,
 	isUpdatingProfile: false,
-
+	onlineUsers: [],
 	isCheckingAuth: true, // Начальная проверка аутентификации
 
 	signup: async (data: IUser) => {
@@ -82,7 +83,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 	updateProfile: async (data) => {
 		set({ isUpdatingProfile: true });
 		try {
-			const response = await axiosInstance.post("auth/profile", data);
+			const response = await axiosInstance.put("auth/profile", data);
 			set({ authUser: response.data });
 			toast.success("Аватар успешно загружен");
 		} catch (error) {

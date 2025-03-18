@@ -2,6 +2,54 @@ import { ChangeEvent, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Camera, User, Mail } from "lucide-react";
 
+export const convertToWebP = async (file: File): Promise<string> => {
+	return new Promise((resolve, reject) => {
+		const img = new Image();
+		const url = URL.createObjectURL(file);
+		img.src = url;
+
+		img.onerror = (e) => {
+			URL.revokeObjectURL(url);
+			reject(new Error("Ошибка загрузки изображения"));
+		};
+
+		img.onload = () => {
+			URL.revokeObjectURL(url);
+			try {
+				const canvas = document.createElement("canvas");
+				canvas.width = Math.min(img.width, 2048); // Ограничение размера
+				canvas.height = Math.min(img.height, 2048);
+
+				const ctx = canvas.getContext("2d");
+				if (!ctx) {
+					throw new Error("Canvas context не доступен");
+				}
+
+				// Рисуем с сохранением пропорций
+				ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+				canvas.toBlob(
+					(blob) => {
+						if (!blob) {
+							reject(new Error("Ошибка создания WebP"));
+							return;
+						}
+
+						const reader = new FileReader();
+						reader.onerror = () =>
+							reject(new Error("Ошибка чтения blob"));
+						reader.onload = () => resolve(reader.result as string);
+						reader.readAsDataURL(blob);
+					},
+					"image/webp",
+					0.7
+				); // Оптимальное качество 70-80%
+			} catch (e) {
+				reject(e);
+			}
+		};
+	});
+};
 const ProfilePage = () => {
 	const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
 	const [selectedImage, setSelectedImage] = useState<
@@ -10,20 +58,43 @@ const ProfilePage = () => {
 
 	const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
-
 		if (!file) return;
 
-		const reader = new FileReader();
+		try {
+			// Добавьте проверку типа файла
+			if (!file.type.startsWith("image/")) {
+				alert("Пожалуйста, выберите изображение");
+				return;
+			}
 
-		reader.readAsDataURL(file);
+			// Конвертация в WebP
+			const webpImage = await convertToWebP(file);
 
-		reader.onload = async () => {
-			const base64Image = reader.result;
-			console.log(base64Image);
-			setSelectedImage(base64Image);
-			await updateProfile({ profilePicture: base64Image });
-		};
+			// Обновление состояния и отправка
+			setSelectedImage(webpImage);
+			await updateProfile({ profilePicture: webpImage });
+		} catch (error) {
+			console.error("Ошибка конвертации:", error);
+			alert("Не удалось обработать изображение");
+		}
 	};
+
+	// const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+	// 	const file = e.target.files?.[0];
+
+	// 	if (!file) return;
+
+	// 	const reader = new FileReader();
+
+	// 	reader.readAsDataURL(file);
+
+	// 	reader.onload = async () => {
+	// 		const base64Image = reader.result;
+	// 		console.log(base64Image);
+	// 		setSelectedImage(base64Image);
+	// 		await updateProfile({ profilePicture: base64Image });
+	// 	};
+	// };
 
 	return (
 		<div className="h-screen pt-20">
@@ -40,7 +111,7 @@ const ProfilePage = () => {
 						<div className="relative">
 							<img
 								src={
-									selectedImage as string ||
+									(selectedImage as string) ||
 									(authUser?.profilePicture as
 										| string
 										| undefined) ||

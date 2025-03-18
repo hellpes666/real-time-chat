@@ -14,7 +14,6 @@ userActionsRouter.post("/login", login);
 
 userActionsRouter.post("/logout", logout);
 
-//@ts-ignore
 userActionsRouter.put("/profile", protectRoute, updateProfile);
 
 //@ts-ignore

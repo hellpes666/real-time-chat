@@ -7,6 +7,7 @@ export interface IUser {
 
 export interface IAuthUser extends IUser {
 	profilePicture: string | ArrayBuffer | null;
+	_id: string;
 	createdAt?: Date;
 	updatedAt?: Date;
 }

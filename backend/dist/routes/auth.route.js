@@ -14,7 +14,6 @@ const userActionsRouter = express_1.default.Router();
 userActionsRouter.post("/signup", auth_controller_1.signup);
 userActionsRouter.post("/login", login_controller_1.login);
 userActionsRouter.post("/logout", logout_controller_1.logout);
-//@ts-ignore
 userActionsRouter.put("/profile", protectRoute_middleware_1.protectRoute, updateProfile_controller_1.updateProfile);
 //@ts-ignore
 userActionsRouter.get("/user", protectRoute_middleware_1.protectRoute, checkAuth_controller_1.checkAuth);

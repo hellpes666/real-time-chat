@@ -15,20 +15,45 @@ const PORT = process.env.PORT || 5001;
 // allow extract to json data from body request - middleware
 app.use(express.json());
 
+app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
-	cors({
-		origin: ["http://localhost:3000"],
-		credentials: true,
-		allowedHeaders: ["Content-Type", "Authorization", "profilePicture"],
+	bodyParser.urlencoded({
+		limit: "50mb",
+		extended: true,
+		parameterLimit: 50000,
 	})
 );
+
+// app.use(
+// 	cors({
+// 		origin: ["http://localhost:3000"],
+// 		credentials: true,
+// 	})
+// );
+
+const whitelist = [
+	"http://localhost:3000",
+	"https://avatars.mds.yandex.net/i?id=bb15cb2513a1342ae1883fdd6eb6e753_l-4055448-images-thumbs&n=13",
+];
+const corsOptions = {
+	//@ts-ignore
+	origin: function (origin, callback) {
+		if (!origin || whitelist.indexOf(origin) !== -1) {
+			callback(null, true);
+		} else {
+			callback(new Error("Not allowed by CORS"));
+		}
+	},
+	credentials: true,
+};
+app.use(cors(corsOptions));
+
 // allow parse cookies
 app.use(cookieParser());
-app.use(express.json({ limit: "10mb" }));
 
 app.use("/api/auth", userActionsRouter);
 
-app.use("/api/message", messageRouter);
+app.use("/api/messages", messageRouter);
 
 app.listen(PORT, () => {
 	console.log(`[server]: Server is running at http://localhost:${PORT}`);

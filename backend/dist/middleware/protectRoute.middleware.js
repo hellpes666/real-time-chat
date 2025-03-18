@@ -21,21 +21,19 @@ const protectRoute = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         // Извлекаем токен из cookies
         const token = req.cookies.jwt;
         if (!token) {
-            return res.status(401).json({
+            res.status(401).json({
                 message: "Вы не авторизованы. No Token Provided.",
             });
         }
         // Проверяем токен с использованием секретного ключа
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         if (!decoded || !decoded.userId) {
-            return res
-                .status(401)
-                .json({ message: "Unauthorized - Invalid Token" });
+            res.status(401).json({ message: "Unauthorized - Invalid Token" });
         }
         // Ищем пользователя по userId из токена
         const user = yield user_model_1.default.findById(decoded.userId).select("-password");
         if (!user) {
-            return res.status(401).json({ message: "Пользователь не найден" });
+            res.status(401).json({ message: "Пользователь не найден" });
         }
         // Добавляем пользователя в запрос
         req.user = user;
