@@ -1,0 +1,13 @@
+{
+	"name": "real-time-chat",
+	"version": "1.0.0",
+	"description": "- MERN, Socket.io, TailwindCSS, Daisy UI\r - JWT\r - Статус пользователей в сети/не в сети\r - Zustand как глобальный стейт-менеджер\r - Обработка ошибок на клиенте и сервере",
+	"main": "index.js",
+	"scripts": {
+		"build": "npm install --prefix backend && nm install --prefix frontend && npm run build --prefix frontend",
+		"start": "npm run start "
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC"
+}

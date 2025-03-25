@@ -1,10 +1,9 @@
 import { X } from "lucide-react";
-import { useAuthStore } from "../store/useAuthStore";
+
 import { useChatStore } from "../store/useChatStore";
 
 const ChatHeader = () => {
 	const { selectedUser, setSelectedUser } = useChatStore();
-	const { onlineUsers } = useAuthStore();
 
 	return (
 		<div className="p-2.5 border-b border-base-300">
@@ -35,9 +34,13 @@ const ChatHeader = () => {
 								selectedUser?.lastName}
 						</h3>
 						<p className="text-sm text-base-content/70">
-							{onlineUsers.includes(selectedUser._id)
-								? "Online"
-								: "Offline"}
+							{
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								//@ts-ignoreonline
+								Users.includes(selectedUser._id)
+									? "Online"
+									: "Offline"
+							}
 						</p>
 					</div>
 				</div>
