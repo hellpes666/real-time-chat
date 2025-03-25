@@ -8,18 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMessages = void 0;
+exports.getMessages = void 0;
 const errorUtils_1 = require("@lib/errorUtils");
-const message_model_1 = __importDefault(require("@models/message.model"));
-const sendMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id: userToChatId } = req.params;
         const myId = req.user._id;
-        const messages = yield message_model_1.default.find({
+        const messages = yield Message.find({
             $or: [
                 { senderId: myId, receiverId: userToChatId },
                 { senderId: userToChatId, receiverId: myId },
@@ -28,7 +24,7 @@ const sendMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(200).json(messages);
     }
     catch (error) {
-        (0, errorUtils_1.handleError)(error, res, "Ошибка в getMessages controller");
+        (0, errorUtils_1.handleError)(error, res, "Ошибка в deleteAllUsers.t");
     }
 });
-exports.sendMessages = sendMessages;
+exports.getMessages = getMessages;

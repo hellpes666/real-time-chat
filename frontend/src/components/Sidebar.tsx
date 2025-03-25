@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { SidebarSkeleton } from "./skeletons";
 import { Users } from "lucide-react";
@@ -9,6 +9,12 @@ const Sidebar = () => {
 		useChatStore();
 
 	const { onlineUsers } = useAuthStore();
+
+	const [showOnlineUsers, setShowOnlineUsers] = useState(false);
+
+	const filteredUsers = showOnlineUsers
+		? users.filter((user) => onlineUsers.includes(user._id))
+		: users;
 
 	useEffect(() => {
 		getUsers();
@@ -25,13 +31,29 @@ const Sidebar = () => {
 						Контакты
 					</span>
 				</div>
-
-				<div className="overflow-y-auto w-full py-3 mt-3">
-					{users.map((user) => (
-						<div
-							key={user._id}
-							onClick={() => setSelectedUser(user)}
-							className={`
+				<div className="mt-3 hidden lg:flex items-center gap-2">
+					<label className="cursor-pointer flex items-center gap-2">
+						<input
+							type="checkbox"
+							checked={showOnlineUsers}
+							onChange={(e) =>
+								setShowOnlineUsers(e.target.checked)
+							}
+							className="checkbox checkbox-sm"
+						/>
+						<span className="text-sm">Show online only</span>
+					</label>
+					<span className="text-xs text-zinc-500">
+						({onlineUsers.length - 1} online)
+					</span>
+				</div>
+			</div>
+			<div className="overflow-y-auto w-full py-3 mt-3">
+				{filteredUsers.map((user) => (
+					<div
+						key={user._id}
+						onClick={() => setSelectedUser(user)}
+						className={`
               w-full flex items-center gap-3
               hover:bg-base-300 transition-colors mb-5 py-3 rounded-lg lg:px-5
               ${
@@ -40,44 +62,44 @@ const Sidebar = () => {
 						: ""
 				}
             `}
-						>
-							<div className="relative mx-auto lg:mx-0">
-								<img
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									//@ts-ignore
-									src={user.profilePicture || "/avatar.jpg"}
-									alt={user.firstName + " " + user.lastName}
-									className="size-12 object-cover rounded-full"
-								/>
-								{/* {onlineUsers.includes(user._id) && (
-									<span
-										className="absolute bottom-0 right-0 size-3 bg-green-500 
+					>
+						<div className="relative mx-auto lg:mx-0">
+							<img
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								//@ts-ignore
+								src={user.profilePicture || "/avatar.jpg"}
+								alt={user.firstName + " " + user.lastName}
+								className="size-12 object-cover rounded-full"
+							/>
+
+							{onlineUsers.includes(user._id) && (
+								<span
+									className="absolute bottom-0 right-0 size-3 bg-green-500 
                   rounded-full ring-2 ring-zinc-900"
-									/>
-								)} */}
-							</div>
+								/>
+							)}
+						</div>
 
-							<div className="hidden lg:block text-left min-w-0">
-								<div className="font-medium truncate">
-									{user.firstName} {user.lastName}
-								</div>
-								<div className="text-sm text-zinc-400">
-									{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-									{/*@ts-ignore */}
-									{onlineUsers.includes(user._id)
-										? "Online"
-										: "Offline"}
-								</div>
+						<div className="hidden lg:block text-left min-w-0">
+							<div className="font-medium truncate">
+								{user.firstName} {user.lastName}
+							</div>
+							<div className="text-sm text-zinc-400">
+								{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+								{/*@ts-ignore */}
+								{onlineUsers.includes(user._id)
+									? "Online"
+									: "Offline"}
 							</div>
 						</div>
-					))}
+					</div>
+				))}
 
-					{users.length === 0 && (
-						<div className="text-center text-zinc-500 py-4">
-							Нет пользователей в онлайне
-						</div>
-					)}
-				</div>
+				{filteredUsers.length === 0 && (
+					<div className="text-center text-zinc-500 py-4">
+						Нет пользователей в онлайне
+					</div>
+				)}
 			</div>
 		</aside>
 	);

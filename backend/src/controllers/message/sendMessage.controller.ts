@@ -1,5 +1,6 @@
 import cloudinary from "@lib/cloudinary";
 import { handleError } from "@lib/errorUtils";
+import { getReceiverSocketId, io } from "@lib/socket";
 import Message from "@models/message.model";
 import { Request, Response } from "express";
 
@@ -26,7 +27,11 @@ export const sendMessage = async (req: Request, res: Response) => {
 
 		await newMessage.save();
 
-		//TODO real-time \
+		const receiverSocketId = getReceiverSocketId(receiverId);
+		if (receiverSocketId) {
+			// user is online
+			io.to(receiverSocketId).emit("newMessage", newMessage);
+		}
 
 		res.status(201).json(newMessage);
 	} catch (error) {

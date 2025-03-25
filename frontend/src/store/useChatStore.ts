@@ -3,6 +3,8 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import { handleError } from "../lib/handleError";
 import { IAuthUser } from "../model/user";
+import { useAuthStore } from "./useAuthStore";
+
 interface IMessage {
 	_id: string;
 	text?: string;
@@ -22,6 +24,8 @@ interface ChatState {
 	getUserMessages: (userId: string | null) => void;
 	setSelectedUser: (selectedUser: IAuthUser | null) => void;
 	sendMessage: (messageData: IMessage) => void;
+	subscribeToMessages: () => void;
+	unsubscribeFromMessages: () => void;
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
@@ -76,6 +80,31 @@ export const useChatStore = create<ChatState>((set, get) => ({
 			toast.error("Ошибка отправки сообщения.");
 			handleError(error, "store/useChatStore - sendMessages");
 		}
+	},
+
+	subscribeToMessages: () => {
+		const { selectedUser } = get();
+		if (!selectedUser) return;
+
+		const { socket } = useAuthStore.getState();
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		//@ts-ignore
+		socket.on("newMessage", (newMessage: IMessage) => {
+			const isMessageSentFromSelectedUser =
+				newMessage.senderId === selectedUser._id;
+			if (!isMessageSentFromSelectedUser) return;
+
+			set({
+				messages: [...get().messages, newMessage],
+			});
+		});
+	},
+
+	unsubscribeFromMessages: () => {
+		const { socket } = useAuthStore.getState();
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		//@ts-ignore
+		socket.off("newMessage");
 	},
 
 	setSelectedUser: (selectedUser) => set({ selectedUser }),

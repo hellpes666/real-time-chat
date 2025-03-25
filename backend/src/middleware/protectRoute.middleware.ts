@@ -13,7 +13,7 @@ export const protectRoute = async (
 		const token = req.cookies.jwt;
 
 		if (!token) {
-			res.status(401).json({
+			return res.status(401).json({
 				message: "Вы не авторизованы. No Token Provided.",
 			});
 		}
@@ -25,14 +25,14 @@ export const protectRoute = async (
 		) as JwtPayload & { userId: string };
 
 		if (!decoded || !decoded.userId) {
-			res.status(401).json({ message: "Unauthorized - Invalid Token" });
+			return res.status(401).json({ message: "Unauthorized - Invalid Token" });
 		}
 
 		// Ищем пользователя по userId из токена
 		const user = await User.findById(decoded.userId).select("-password");
 
 		if (!user) {
-			res.status(401).json({ message: "Пользователь не найден" });
+			return res.status(401).json({ message: "Пользователь не найден" });
 		}
 
 		// Добавляем пользователя в запрос

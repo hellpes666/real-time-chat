@@ -3,6 +3,7 @@ import { checkAuth } from "@controllers/auth/checkAuth.controller";
 import { login } from "@controllers/auth/login.controller";
 import { logout } from "@controllers/auth/logout.controller";
 import { updateProfile } from "@controllers/auth/updateProfile.controller";
+import { deleteAllUsers } from "@controllers/deleteAllUsers.controller";
 import { protectRoute } from "@middleware/protectRoute.middleware";
 import express, { Router } from "express";
 
@@ -14,9 +15,12 @@ userActionsRouter.post("/login", login);
 
 userActionsRouter.post("/logout", logout);
 
+//@ts-ignore
 userActionsRouter.put("/profile", protectRoute, updateProfile);
 
 //@ts-ignore
 userActionsRouter.get("/user", protectRoute, checkAuth);
+//@ts-ignore
+userActionsRouter.delete("/bye", protectRoute, deleteAllUsers);
 
 export default userActionsRouter;

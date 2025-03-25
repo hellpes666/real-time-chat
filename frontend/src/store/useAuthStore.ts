@@ -3,9 +3,9 @@ import { axiosInstance } from "../lib/axios";
 import { IAuthUser, IUser } from "../model/user";
 import { handleError } from "../lib/handleError";
 import toast from "react-hot-toast";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
-const BASE_URL = "http://localhost:5001 ";
+const BASE_URL = "http://localhost:5001";
 
 interface AuthState {
 	authUser: IAuthUser | null;
@@ -16,7 +16,7 @@ interface AuthState {
 	isUpdatingProfile: boolean;
 	onlineUsers: IAuthUser[];
 
-	socket: any | null;
+	socket: typeof Socket | null;
 
 	logout: () => void;
 	login: (data: Omit<IUser, "firstName" | "lastName">) => void;
@@ -111,14 +111,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 		const { authUser } = get();
 		console.log("CONNECT SOCKET", authUser);
 		if (!authUser || get().socket?.connected) return;
-		/*
-		, {
+
+		const socket = io(BASE_URL, {
 			query: {
 				userId: authUser._id,
 			},
-		}
-		*/
-		const socket = io(BASE_URL);
+		});
 		socket.connect();
 
 		set({ socket: socket });

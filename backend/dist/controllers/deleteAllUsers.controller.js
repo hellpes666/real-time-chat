@@ -8,18 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = void 0;
+exports.deleteAllUsers = void 0;
 const errorUtils_1 = require("@lib/errorUtils");
-const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const user_model_1 = __importDefault(require("@models/user.model"));
+const deleteAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.cookie("jwt", "", { maxAge: 0 });
-        res.status(200).json({
-            message: "Вы успешно вышли из акаунта. Будем ждать вас снова!",
-        });
+        yield user_model_1.default.deleteMany({});
+        res.status(200).json({ message: "Ты их удалил..." });
     }
     catch (error) {
-        (0, errorUtils_1.handleError)(error, res, "Ошибка в logout controller:");
+        (0, errorUtils_1.handleError)(error, res, "Ошибка в deleteAllUsers.controller.ts");
     }
 });
-exports.logout = logout;
+exports.deleteAllUsers = deleteAllUsers;

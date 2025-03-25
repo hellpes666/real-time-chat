@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { MessageSkeleton } from "./skeletons";
 import { ChatHeader, MessageInput, EmptyChat } from ".";
@@ -6,17 +6,42 @@ import { useAuthStore } from "../store/useAuthStore";
 import { formatMessageTime } from "../lib/utils";
 
 const ChatContainer = () => {
-	const { messages, getUserMessages, isMessagesLoading, selectedUser } =
-		useChatStore();
+	const {
+		messages,
+		getUserMessages,
+		isMessagesLoading,
+		selectedUser,
+		subscribeToMessages,
+		unsubscribeFromMessages,
+	} = useChatStore();
 
 	const { authUser } = useAuthStore();
+
+	const lastMessageScrollRef = useRef(null);
 
 	useEffect(() => {
 		const currentUserIdOrNull =
 			selectedUser === null ? null : selectedUser._id;
 
 		getUserMessages(currentUserIdOrNull);
-	}, [getUserMessages, selectedUser]);
+		subscribeToMessages();
+
+		return () => unsubscribeFromMessages();
+	}, [
+		getUserMessages,
+		selectedUser,
+		subscribeToMessages,
+		unsubscribeFromMessages,
+	]);
+
+	useEffect(() => {
+		if (lastMessageScrollRef.current && messages) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			//@ts-ignore
+			lastMessageScrollRef.current.scrollIntoView({ behavior: "smooth" });
+		}
+	}, [messages]);
+
 	if (isMessagesLoading) return <MessageSkeleton />;
 
 	return (
@@ -33,6 +58,7 @@ const ChatContainer = () => {
 									: "chat-start"
 							}`}
 							key={message._id}
+							ref={lastMessageScrollRef}
 						>
 							<div className=" chat-image avatar">
 								<div className="size-10 rounded-full border">
