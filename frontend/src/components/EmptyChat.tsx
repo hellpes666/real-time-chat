@@ -1,6 +1,9 @@
 import { MessageSquare } from "lucide-react";
 
-const NoChatSelected = () => {
+const EmptyChat = ({
+	title = "Добро пожаловать!",
+	subtitle = "Выберите пользователя в боковом меню для общения",
+}) => {
 	return (
 		<div className="w-full flex flex-1 flex-col items-center justify-center p-16 bg-base-100/50">
 			<div className="max-w-md text-center space-y-6">
@@ -17,13 +20,11 @@ const NoChatSelected = () => {
 				</div>
 
 				{/* Welcome Text */}
-				<h2 className="text-2xl font-bold">Добро пожаловать!</h2>
-				<p className="text-base-content/60">
-					Выберите пользователя в боковом меню для общения
-				</p>
+				<h2 className="text-2xl font-bold">{title}</h2>
+				<p className="text-base-content/60">{subtitle}</p>
 			</div>
 		</div>
 	);
 };
 
-export default NoChatSelected;
+export default EmptyChat;

@@ -14,8 +14,10 @@ import { IUser } from "./model/user";
 import { Toaster } from "react-hot-toast";
 import { useThemeStore } from "./store/useThemeStore";
 const App = () => {
-	const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+	const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore();
 	const { theme } = useThemeStore();
+
+	console.log("ONLINE USERS", { onlineUsers });
 
 	useEffect(() => {
 		checkAuth();
